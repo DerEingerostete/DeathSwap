@@ -17,7 +17,7 @@ public class GameOptions {
 	private final @NotNull Set<UUID> deadPlayers;
 	private @NotNull GameState state;
 	private boolean teleportingDelayActive;
-	private boolean noRandomTeleport;
+	private boolean randomTeleport;
 
 	public GameOptions() {
 		this.state = GameState.WAITING_FOR_PLAYERS;
@@ -26,7 +26,7 @@ public class GameOptions {
 		this.deadPlayers = new HashSet<>();
 
 		FileConfiguration config = DeathSwapPlugin.getInstance().getConfig();
-		this.noRandomTeleport = config.getBoolean("noRandomTeleport", false);
+		this.randomTeleport = config.getBoolean("randomTeleport", true);
 	}
 
 	public void addDeadPlayer(@NotNull Player player) {

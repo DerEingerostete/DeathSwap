@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class Permissions {
 	public static final @NotNull String START_PERMISSION = "deathswap.start";
+	public static final @NotNull String SWAP_RANDOM_PERMISSION = "deathswap.random";
 	public static final @NotNull String MOD_PERMISSION = "deathswap.moderator";
 
 	@NotNull

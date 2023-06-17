@@ -48,7 +48,7 @@ public class TeleportCountdown {
 	}
 
 	public void start() {
-		if (options.isNoRandomTeleport())
+		if (options.isRandomTeleport())
 			currentTeleportDuration = random.nextInt(firstTimeSafeUntil, firstTimeSafeUntil + 60);
 		else currentTeleportDuration = firstTimeSafeUntil;
 		AsyncScheduler scheduler = Bukkit.getAsyncScheduler();
@@ -57,7 +57,7 @@ public class TeleportCountdown {
 		task = scheduler.runAtFixedRate(DeathSwapPlugin.getInstance(), (task) -> {
 			if (currentTime >= currentTeleportDuration) {
 				teleportAll();
-				if (options.isNoRandomTeleport()) currentTeleportDuration = random.nextInt(safeUntil, teleportLimit);
+				if (options.isRandomTeleport()) currentTeleportDuration = random.nextInt(safeUntil, teleportLimit);
 				else currentTeleportDuration = safeUntil;
 				currentTime = 0;
 			} else {

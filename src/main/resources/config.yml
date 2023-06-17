@@ -9,4 +9,4 @@ max_radius: 50000
 safeUntil: 120
 teleportLimit: 180
 firstTimeSafeUntil: 300
-noRandomTeleport: false
+randomTeleport: false

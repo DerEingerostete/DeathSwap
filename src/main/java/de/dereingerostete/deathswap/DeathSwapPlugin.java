@@ -3,6 +3,7 @@ package de.dereingerostete.deathswap;
 import de.dereingerostete.deathswap.chat.Chat;
 import de.dereingerostete.deathswap.chat.Logging;
 import de.dereingerostete.deathswap.command.StartCommand;
+import de.dereingerostete.deathswap.command.SwapRandomCommand;
 import de.dereingerostete.deathswap.command.util.SimpleCommand;
 import de.dereingerostete.deathswap.listener.ConnectListener;
 import de.dereingerostete.deathswap.listener.DeathListener;
@@ -25,11 +26,16 @@ public class DeathSwapPlugin extends JavaPlugin {
 		reloadConfig();
 
 		registerListeners();
-		registerCommand(new StartCommand());
+		registerCommands();
 		options = new GameOptions();
 
 		Chat.setPrefix("§8[§5Event§8] §7");
 		Logging.info("Plugin enabled");
+	}
+
+	private void registerCommands() {
+		registerCommand(new StartCommand());
+		registerCommand(new SwapRandomCommand());
 	}
 
 	protected void registerListeners() {
