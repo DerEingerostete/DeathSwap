@@ -16,10 +16,10 @@ public class MoveListener implements Listener {
 		Player player = event.getPlayer();
 		if (player.hasPermission(Permissions.MOD_PERMISSION)) return;
 
-		GameState state = DeathSwapPlugin.getState();
+		GameState state = DeathSwapPlugin.getOptions().getState();
 		if (state == GameState.WAITING_FOR_PLAYERS ||
 				state == GameState.STARTING ||
-				DeathSwapPlugin.isTeleportingDelayActive()) {
+				DeathSwapPlugin.getOptions().isTeleportingDelayActive()) {
 			event.setCancelled(true);
 		}
 	}

@@ -3,6 +3,7 @@ package de.dereingerostete.deathswap.listener;
 import de.dereingerostete.deathswap.DeathSwapPlugin;
 import de.dereingerostete.deathswap.chat.Chat;
 import de.dereingerostete.deathswap.countdown.EndCountdown;
+import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.Permissions;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import net.kyori.adventure.text.Component;
@@ -21,7 +22,13 @@ import java.util.List;
 import java.util.Random;
 
 public class DeathListener implements Listener {
-	private boolean alreadyStopped = false;
+	private final @NotNull GameOptions options;
+	private boolean alreadyStopped;
+
+	public DeathListener() {
+		options = DeathSwapPlugin.getOptions();
+		alreadyStopped = false;
+	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDeath(@NotNull PlayerDeathEvent event) {
@@ -29,9 +36,10 @@ public class DeathListener implements Listener {
 		List<? extends Player> livingPlayers = Permissions.getNonModerators();
 		livingPlayers.remove(player);
 
-		player.banPlayer("§cYou died\n§7Thanks for participating", null, null, true);
+		player.kick(Component.text("§cYou died\n§7Thanks for participating"));
+		options.addDeadPlayer(player);
 		if (livingPlayers.size() > 1L || alreadyStopped) return;
-		DeathSwapPlugin.getTeleportCountdown().stop();
+		options.getTeleportCountdown().stop();
 
 		Player winningPlayer = livingPlayers.get(0);
 		winningPlayer.setGameMode(GameMode.ADVENTURE);
@@ -45,7 +53,6 @@ public class DeathListener implements Listener {
 		winningPlayer.showTitle(title);
 
 		Chat.broadcast("§6§l" + winningPlayer.getName() + "§r§7 won the game!");
-
 		Color purpleColor = Color.fromRGB(145, 70, 255);
 		Color purpleDarkerColor = Color.fromRGB(100, 65, 165);
 		Color darkPurpleColor = Color.fromRGB(60, 45, 90);

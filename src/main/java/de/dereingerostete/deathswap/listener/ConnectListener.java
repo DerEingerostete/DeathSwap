@@ -2,6 +2,7 @@ package de.dereingerostete.deathswap.listener;
 
 import de.dereingerostete.deathswap.DeathSwapPlugin;
 import de.dereingerostete.deathswap.chat.Logging;
+import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.GameState;
 import de.dereingerostete.deathswap.util.Permissions;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
@@ -13,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,11 +26,13 @@ import java.util.UUID;
 
 public class ConnectListener implements Listener {
 	private final @NotNull Set<UUID> teleportedPlayers;
+	private final @NotNull GameOptions options;
 	private final @NotNull Random random;
 	private final int maxSpawnRadius;
 
 	public ConnectListener() {
 		this.teleportedPlayers = new HashSet<>();
+		this.options = DeathSwapPlugin.getOptions();
 		this.random = new Random();
 
 		FileConfiguration config = DeathSwapPlugin.getInstance().getConfig();
@@ -44,7 +48,7 @@ public class ConnectListener implements Listener {
 		boolean modOrParticipant = teleportedPlayers.contains(uuid) ||
 				player.hasPermission(Permissions.MOD_PERMISSION);
 
-		GameState state = DeathSwapPlugin.getState();
+		GameState state = DeathSwapPlugin.getOptions().getState();
 		try {
 			if (state == GameState.STARTING && !modOrParticipant) {
 				player.kick(Component.text("§cThe game is already starting"));
@@ -91,6 +95,15 @@ public class ConnectListener implements Listener {
 				player.teleportAsync(location);
 			});
 		}, null);
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onLogin(@NotNull AsyncPlayerPreLoginEvent event) {
+		UUID uuid = event.getUniqueId();
+		if (options.isDead(uuid)) {
+			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+			event.kickMessage(Component.text("§cYou died\n§7Thanks for participating"));
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true)

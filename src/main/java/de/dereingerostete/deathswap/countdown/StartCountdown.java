@@ -2,6 +2,7 @@ package de.dereingerostete.deathswap.countdown;
 
 import de.dereingerostete.deathswap.DeathSwapPlugin;
 import de.dereingerostete.deathswap.chat.Chat;
+import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.GameState;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
@@ -19,16 +20,18 @@ import java.util.List;
 
 public class StartCountdown implements Countdown.Actions {
 	protected final @NotNull Countdown countdown;
+	protected final @NotNull GameOptions options;
 
 	public StartCountdown() {
-		countdown = new Countdown();
+		this.countdown = new Countdown();
+		this.options = DeathSwapPlugin.getOptions();
 	}
 
 	public void start() {
 		FileConfiguration config = DeathSwapPlugin.getInstance().getConfig();
 		long duration = config.getLong("startCountdownDuration", 30L);
 
-		DeathSwapPlugin.setState(GameState.STARTING);
+		options.setState(GameState.STARTING);
 		countdown.start(this, duration);
 	}
 
@@ -46,7 +49,7 @@ public class StartCountdown implements Countdown.Actions {
 
 	@Override
 	public void onEnd() {
-		DeathSwapPlugin.setState(GameState.RUNNING);
+		options.setState(GameState.RUNNING);
 
 		List<Player> players = List.copyOf(Bukkit.getOnlinePlayers());
 		players.forEach(player -> {
@@ -56,7 +59,7 @@ public class StartCountdown implements Countdown.Actions {
 
 		GlobalRegionScheduler scheduler = Bukkit.getGlobalRegionScheduler();
 		scheduler.run(DeathSwapPlugin.getInstance(), task -> Bukkit.getWorlds().forEach(world -> world.setTime(6000)));
-		DeathSwapPlugin.getTeleportCountdown().start();
+		options.getTeleportCountdown().start();
 
 		Component titleComponent = Component.text("§2Go!");
 		Title.Times times = Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(1));
