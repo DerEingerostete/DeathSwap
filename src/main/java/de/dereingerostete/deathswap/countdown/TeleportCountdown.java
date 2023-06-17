@@ -99,7 +99,7 @@ public class TeleportCountdown {
 		for (int i = 0; i < players.size(); i++) {
 			Player player = players.get(i);
 
-			int targetIndex = i + 1 >= playerSize ? 0 : 1;
+			int targetIndex = i + 1 >= playerSize ? 0 : i + 1;
 			Player target = players.get(targetIndex);
 
 			EntityScheduler scheduler = target.getScheduler();
