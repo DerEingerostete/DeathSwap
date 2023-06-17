@@ -39,7 +39,7 @@ public class DeathListener implements Listener {
 		player.kick(Component.text("§cYou died\n§7Thanks for participating"));
 		options.addDeadPlayer(player);
 		if (livingPlayers.size() > 1L || alreadyStopped) return;
-		options.getTeleportCountdown().stop();
+		DeathSwapPlugin.getCountdown().stop();
 
 		Player winningPlayer = livingPlayers.get(0);
 		winningPlayer.setGameMode(GameMode.ADVENTURE);

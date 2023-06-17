@@ -1,6 +1,7 @@
 package de.dereingerostete.deathswap.listener;
 
 import de.dereingerostete.deathswap.DeathSwapPlugin;
+import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.GameState;
 import de.dereingerostete.deathswap.util.Permissions;
 import org.bukkit.entity.Player;
@@ -16,10 +17,11 @@ public class MoveListener implements Listener {
 		Player player = event.getPlayer();
 		if (player.hasPermission(Permissions.MOD_PERMISSION)) return;
 
-		GameState state = DeathSwapPlugin.getOptions().getState();
+		GameOptions options = DeathSwapPlugin.getOptions();
+		GameState state = options.getState();
 		if (state == GameState.WAITING_FOR_PLAYERS ||
 				state == GameState.STARTING ||
-				DeathSwapPlugin.getOptions().isTeleportingDelayActive()) {
+				options.isTeleportingDelayActive()) {
 			event.setCancelled(true);
 		}
 	}

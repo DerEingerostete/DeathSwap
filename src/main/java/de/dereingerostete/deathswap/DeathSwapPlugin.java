@@ -5,6 +5,7 @@ import de.dereingerostete.deathswap.chat.Logging;
 import de.dereingerostete.deathswap.command.StartCommand;
 import de.dereingerostete.deathswap.command.SwapRandomCommand;
 import de.dereingerostete.deathswap.command.util.SimpleCommand;
+import de.dereingerostete.deathswap.countdown.TeleportCountdown;
 import de.dereingerostete.deathswap.listener.ConnectListener;
 import de.dereingerostete.deathswap.listener.DeathListener;
 import de.dereingerostete.deathswap.listener.MoveListener;
@@ -16,8 +17,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class DeathSwapPlugin extends JavaPlugin {
-	private static @Getter JavaPlugin instance;
 	private static @Getter GameOptions options;
+	private static @Getter TeleportCountdown countdown;
+	private static @Getter JavaPlugin instance;
 
 	@Override
 	public void onEnable() {
@@ -25,9 +27,10 @@ public class DeathSwapPlugin extends JavaPlugin {
 		saveDefaultConfig();
 		reloadConfig();
 
+		options = new GameOptions();
+		countdown = new TeleportCountdown();
 		registerListeners();
 		registerCommands();
-		options = new GameOptions();
 
 		Chat.setPrefix("§8[§5Event§8] §7");
 		Logging.info("Plugin enabled");

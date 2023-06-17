@@ -59,7 +59,7 @@ public class StartCountdown implements Countdown.Actions {
 
 		GlobalRegionScheduler scheduler = Bukkit.getGlobalRegionScheduler();
 		scheduler.run(DeathSwapPlugin.getInstance(), task -> Bukkit.getWorlds().forEach(world -> world.setTime(6000)));
-		options.getTeleportCountdown().start();
+		DeathSwapPlugin.getCountdown().start();
 
 		Component titleComponent = Component.text("§2Go!");
 		Title.Times times = Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(1));

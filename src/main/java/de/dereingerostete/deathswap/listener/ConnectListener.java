@@ -48,7 +48,7 @@ public class ConnectListener implements Listener {
 		boolean modOrParticipant = teleportedPlayers.contains(uuid) ||
 				player.hasPermission(Permissions.MOD_PERMISSION);
 
-		GameState state = DeathSwapPlugin.getOptions().getState();
+		GameState state = options.getState();
 		try {
 			if (state == GameState.STARTING && !modOrParticipant) {
 				player.kick(Component.text("§cThe game is already starting"));
