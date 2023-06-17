@@ -78,7 +78,7 @@ public class TeleportCountdown {
 		String formattedTime = String.format("%d:%02d", minutes, seconds);
 
 		String message;
-		if ((totalTeleports == 1 && timeSinceLastTeleport <= firstTimeSafeUntil) || timeSinceLastTeleport <= safeUntil) {
+		if ((totalTeleports == 0 && timeSinceLastTeleport <= firstTimeSafeUntil) || timeSinceLastTeleport <= safeUntil) {
 			message = "§8§l[§a§lSafe§l§8]§r §aTime since swap: " + formattedTime + "§8 |§7 Swaps §8[§a" + totalTeleports + "§8]";
 		} else {
 			message = "§8[§c§lUnsafe§l§8]§r §cTime since swap: " + formattedTime + "§8 |§7 Swaps §8[§c" + totalTeleports + "§8]";
