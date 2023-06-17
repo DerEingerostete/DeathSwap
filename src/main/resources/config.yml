@@ -1,0 +1,10 @@
+#The duration of the start / end countdown in seconds
+startCountdownDuration: 30
+endCountdownDuration: 30
+
+#Random Spawn Radius
+max_radius: 50000
+
+#Countdown in seconds
+safeUntil: 120
+teleportLimit: 180

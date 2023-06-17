@@ -1,0 +1,9 @@
+name: DeathSwap
+author: DerEingerostete
+
+description: DeathSwap event plugin for Horizon Events
+version: '${project.version}'
+
+api-version: 1.19
+main: de.dereingerostete.deathswap.DeathSwapPlugin
+folia-supported: true
