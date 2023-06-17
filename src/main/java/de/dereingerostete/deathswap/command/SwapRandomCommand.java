@@ -29,7 +29,7 @@ public class SwapRandomCommand extends SimpleCommand {
 		options.setRandomTeleport(random);
 
 		if (random) Chat.toPlayer(sender, "§aEnabled §7random teleports. Players will now have a unsafe phase");
-		else Chat.toPlayer(sender, "§cDisabled §7random teleports. Players will no be teleported after the safe phase ended");
+		else Chat.toPlayer(sender, "§cDisabled §7random teleports. Players will not be teleported after the safe phase ended");
 	}
 
 }
