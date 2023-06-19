@@ -1,7 +1,6 @@
 package de.dereingerostete.deathswap.listener;
 
 import de.dereingerostete.deathswap.DeathSwapPlugin;
-import de.dereingerostete.deathswap.chat.Logging;
 import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.GameState;
 import de.dereingerostete.deathswap.util.Permissions;
@@ -25,12 +24,14 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ConnectListener implements Listener {
+	private final @NotNull Set<UUID> modPlayers;
 	private final @NotNull Set<UUID> teleportedPlayers;
 	private final @NotNull GameOptions options;
 	private final @NotNull Random random;
 	private final int maxSpawnRadius;
 
 	public ConnectListener() {
+		this.modPlayers = new HashSet<>();
 		this.teleportedPlayers = new HashSet<>();
 		this.options = DeathSwapPlugin.getOptions();
 		this.random = new Random();
@@ -48,7 +49,12 @@ public class ConnectListener implements Listener {
 		boolean modOrParticipant = teleportedPlayers.contains(uuid) ||
 				player.hasPermission(Permissions.MOD_PERMISSION);
 
+		if (player.hasPermission(Permissions.MOD_PERMISSION)) {
+			modPlayers.add(uuid);
+		}
+
 		GameState state = options.getState();
+		/* Disabled
 		try {
 			if (state == GameState.STARTING && !modOrParticipant) {
 				player.kick(Component.text("§cThe game is already starting"));
@@ -63,7 +69,7 @@ public class ConnectListener implements Listener {
 		} catch (Exception exception) {
 			Logging.warning("Failed to kick player", exception);
 			return;
-		}
+		}*/
 
 		if (state == GameState.WAITING_FOR_PLAYERS) {
 			if (player.getGameMode() != GameMode.CREATIVE) player.setInvulnerable(false);
@@ -100,6 +106,23 @@ public class ConnectListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onLogin(@NotNull AsyncPlayerPreLoginEvent event) {
 		UUID uuid = event.getUniqueId();
+		boolean allowedToJoin = teleportedPlayers.contains(uuid) || modPlayers.contains(uuid);
+
+		GameState state = options.getState();
+		if (state == GameState.STARTING && !allowedToJoin) {
+			event.kickMessage(Component.text("§cThe game is already starting"));
+			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+			return;
+		} else if (state == GameState.RUNNING && !allowedToJoin) {
+			event.kickMessage(Component.text("§cThe game is already running"));
+			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+			return;
+		} else if (state == GameState.ENDING && !allowedToJoin) {
+			event.kickMessage(Component.text("§cThe game already finished"));
+			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+			return;
+		}
+
 		if (options.isDead(uuid)) {
 			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
 			event.kickMessage(Component.text("§cYou died\n§7Thanks for participating"));
@@ -109,6 +132,14 @@ public class ConnectListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onQuit(@NotNull PlayerQuitEvent event) {
 		event.quitMessage(null);
+
+		/* Disabled (NOT TESTED)
+		Player player = event.getPlayer();
+		List<? extends Player> livingPlayers = Permissions.getNonModerators();
+		livingPlayers.remove(player);
+
+		options.addDeadPlayer(player);
+		if (livingPlayers.size() <= 1L) DeathSwapPlugin.handleWin(livingPlayers.get(0));*/
 	}
 
 }

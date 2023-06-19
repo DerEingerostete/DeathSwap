@@ -4,6 +4,7 @@ import de.dereingerostete.deathswap.DeathSwapPlugin;
 import de.dereingerostete.deathswap.chat.Chat;
 import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.GameState;
+import de.dereingerostete.deathswap.util.Permissions;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import net.kyori.adventure.text.Component;
@@ -51,7 +52,7 @@ public class StartCountdown implements Countdown.Actions {
 	public void onEnd() {
 		options.setState(GameState.RUNNING);
 
-		List<Player> players = List.copyOf(Bukkit.getOnlinePlayers());
+		List<? extends Player> players = Permissions.getNonModerators();
 		players.forEach(player -> {
 			EntityScheduler scheduler = player.getScheduler();
 			scheduler.run(DeathSwapPlugin.getInstance(), (task) -> {

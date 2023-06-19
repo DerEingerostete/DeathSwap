@@ -4,7 +4,6 @@ import de.dereingerostete.deathswap.DeathSwapPlugin;
 import de.dereingerostete.deathswap.chat.Chat;
 import de.dereingerostete.deathswap.util.GameOptions;
 import de.dereingerostete.deathswap.util.Permissions;
-import de.dereingerostete.deathswap.util.SchedulerUtils;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -17,12 +16,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class TeleportCountdown {
 	protected final @NotNull GameOptions options;
@@ -40,6 +36,7 @@ public class TeleportCountdown {
 
 	public TeleportCountdown() {
 		this.options = DeathSwapPlugin.getOptions();
+		this.random = new Random();
 		this.totalTeleports = 0;
 		this.warning = false;
 
@@ -106,11 +103,11 @@ public class TeleportCountdown {
 		Collections.shuffle(players);
 		int playerSize = players.size();
 
-		boolean revertDelay = playerSize > 10;
+		/*boolean revertDelay = playerSize > 10;
 		if (revertDelay) {
 			Chat.broadcast("§7Players are frozen for 3 seconds so that the chunks can be loaded.");
 			options.setTeleportingDelayActive(true);
-		}
+		}*/
 
 		Sound teleportSound = Sound.sound()
 				.type(Key.key("minecraft", "entity.enderman.teleport"))
@@ -119,32 +116,34 @@ public class TeleportCountdown {
 				.source(Sound.Source.PLAYER)
 				.build();
 
-		AtomicReference<Location> firstPlayerLocation = new AtomicReference<>();
-		for (int i = 0; i < players.size(); i++) {
+		Map<Player, Location> playerTargetLocation = new HashMap<>();
+		Location firstPlayerLocation = players.get(0).getLocation().clone();
+		playerTargetLocation.put(players.get(playerSize - 1), firstPlayerLocation);
+
+		for (int i = 1; i < players.size() - 1; i++) {
 			Player player = players.get(i);
-			if (firstPlayerLocation.get() == null) {
-				firstPlayerLocation.set(player.getLocation().clone());
-			}
 
 			int targetIndex = i + 1 >= playerSize ? 0 : i + 1;
 			Player target = players.get(targetIndex);
-
-			EntityScheduler scheduler = target.getScheduler();
-			scheduler.run(DeathSwapPlugin.getInstance(), task -> {
-				Location location = targetIndex == 0 ? firstPlayerLocation.get() : target.getLocation();
-
-				CompletableFuture<Boolean> future = player.teleportAsync(location);
-				future.thenRun(() -> player.playSound(teleportSound, Sound.Emitter.self()));
-				Chat.toPlayer(player, "§7You have been teleported to §6" + target.getName());
-			}, null);
+			Location targetLocation = target.getLocation().clone();
+			playerTargetLocation.put(player, targetLocation);
 		}
 
-		if (revertDelay) {
+		playerTargetLocation.forEach((player, location) -> {
+			EntityScheduler scheduler = player.getScheduler();
+			scheduler.run(DeathSwapPlugin.getInstance(), task -> {
+				CompletableFuture<Boolean> future = player.teleportAsync(location);
+				future.thenRun(() -> player.playSound(teleportSound, Sound.Emitter.self()));
+				Chat.toPlayer(player, "§7You have been teleported to §6" + player.getName());
+			}, null);
+		});
+
+		/*if (revertDelay) {
 			SchedulerUtils.runLaterAsync(() -> {
 				options.setTeleportingDelayActive(false);
 				Chat.broadcast("§7All players can move now!");
 			}, 2, TimeUnit.SECONDS);
-		}
+		}*/
 	}
 
 }
