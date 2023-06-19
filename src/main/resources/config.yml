@@ -10,3 +10,4 @@ safeUntil: 120
 teleportLimit: 180
 firstTimeSafeUntil: 300
 randomTeleport: false
+shouldWarn: false

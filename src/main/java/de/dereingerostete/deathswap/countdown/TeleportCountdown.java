@@ -30,22 +30,24 @@ public class TeleportCountdown {
 	protected final int firstTimeSafeUntil;
 	protected final int safeUntil;
 	protected final int teleportLimit;
+	protected final boolean shouldWarn;
 
 	protected @Nullable ScheduledTask task;
 	protected long currentTime;
 	protected long currentTeleportDuration; //The time after which the teleport happens
 	protected int totalTeleports;
-	protected boolean warning = false;
+	protected boolean warning;
 
 	public TeleportCountdown() {
 		this.options = DeathSwapPlugin.getOptions();
 		this.totalTeleports = 0;
-		this.random = new Random();
+		this.warning = false;
 
 		FileConfiguration config = DeathSwapPlugin.getInstance().getConfig();
 		this.safeUntil = config.getInt("safeUntil", 120);
 		this.teleportLimit = config.getInt("teleportLimit", 180);
 		this.firstTimeSafeUntil = config.getInt("firstTimeSafeUntil", 300);
+		this.shouldWarn = config.getBoolean("shouldWarn", false);
 	}
 
 	public void start() {
@@ -62,7 +64,7 @@ public class TeleportCountdown {
 				if (options.isRandomTeleport()) currentTeleportDuration = random.nextInt(safeUntil, teleportLimit);
 				else currentTeleportDuration = safeUntil;
 				currentTime = 0;
-			} else if(currentTime >= currentTeleportDuration-3) {
+			} else if(currentTime >= currentTeleportDuration - 3 && shouldWarn) {
 				warning = true;
 				currentTime++;
 				onTick();
