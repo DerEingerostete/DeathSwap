@@ -35,6 +35,7 @@ public class TeleportCountdown {
 	protected long currentTime;
 	protected long currentTeleportDuration; //The time after which the teleport happens
 	protected int totalTeleports;
+	protected boolean warning = false;
 
 	public TeleportCountdown() {
 		this.options = DeathSwapPlugin.getOptions();
@@ -56,10 +57,15 @@ public class TeleportCountdown {
 		currentTime = 0;
 		task = scheduler.runAtFixedRate(DeathSwapPlugin.getInstance(), (task) -> {
 			if (currentTime >= currentTeleportDuration) {
+				warning = false;
 				teleportAll();
 				if (options.isRandomTeleport()) currentTeleportDuration = random.nextInt(safeUntil, teleportLimit);
 				else currentTeleportDuration = safeUntil;
 				currentTime = 0;
+			} else if(currentTime >= currentTeleportDuration-3) {
+				warning = true;
+				currentTime++;
+				onTick();
 			} else {
 				currentTime++;
 				onTick();
@@ -82,6 +88,10 @@ public class TeleportCountdown {
 			message = "§8§l[§a§lSafe§l§8]§r §aTime since swap: " + formattedTime + "§8 |§7 Swaps §8[§a" + totalTeleports + "§8]";
 		} else {
 			message = "§8[§c§lUnsafe§l§8]§r §cTime since swap: " + formattedTime + "§8 |§7 Swaps §8[§c" + totalTeleports + "§8]";
+		}
+
+		if(warning) {
+			message = message + "§8 |§c SWAPPING!";
 		}
 		Chat.broadcastActionBar(message);
 	}

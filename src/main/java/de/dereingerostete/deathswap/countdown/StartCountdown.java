@@ -54,7 +54,10 @@ public class StartCountdown implements Countdown.Actions {
 		List<Player> players = List.copyOf(Bukkit.getOnlinePlayers());
 		players.forEach(player -> {
 			EntityScheduler scheduler = player.getScheduler();
-			scheduler.run(DeathSwapPlugin.getInstance(), (task) -> player.setGameMode(GameMode.SURVIVAL), null);
+			scheduler.run(DeathSwapPlugin.getInstance(), (task) -> {
+				player.setGameMode(GameMode.SURVIVAL);
+				player.getInventory().clear();
+			}, null);
 		});
 
 		GlobalRegionScheduler scheduler = Bukkit.getGlobalRegionScheduler();
